@@ -5,9 +5,10 @@ from loguru import logger
 
 import env
 from bot_logging import log_to_telegram_bot
-from parsing import parsing_main
+from parsing import start_parsing
 
 
+@logger.catch
 async def main():
     logger.remove(0)
     logger.add(sink=sys.stderr)
@@ -15,7 +16,7 @@ async def main():
 
     logger.info('Telegram bot has started!')
 
-    await parsing_main()
+    await start_parsing()
 
 
 if __name__ == '__main__':
