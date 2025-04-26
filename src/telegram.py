@@ -1,7 +1,8 @@
 from aiogram.types import Message
-from config import bot
-import env
 from loguru import logger
+
+import env
+from config import bot
 
 
 @logger.catch
