@@ -89,7 +89,7 @@ async def start_parsing() -> NoReturn:
             message = await send_message_in_channel(message_to_send)
             env.TELEGRAM_BOT_MESSAGE_ID = message.message_id
             dotenv.set_key(
-                dotenv.find_dotenv(),
+                '.env',
                 'TELEGRAM_BOT_MESSAGE_ID',
                 str(message.message_id),
             )
