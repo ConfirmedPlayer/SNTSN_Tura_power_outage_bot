@@ -11,4 +11,5 @@ dependencies = [
     "loguru>=0.7.3",
     "lxml>=5.4.0",
     "python-dotenv>=1.1.0",
+    "redis[hiredis]>=5.2.1",
 ]

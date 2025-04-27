@@ -1,34 +1,19 @@
 import asyncio
-import random
-from datetime import datetime
 from typing import NoReturn
 
-import dotenv
-from aiohttp import ClientSession
 from bs4 import BeautifulSoup
 from loguru import logger
 
 import env
-from telegram import edit_message_in_channel, send_message_in_channel
-
-last_message = ''
-
-
-def get_current_date() -> str:
-    datetime_now = datetime.now(tz=env.TIMEZONE)
-    return datetime_now.date().strftime('%d.%m.%Y')
-
-
-def get_current_datetime() -> str:
-    datetime_now = datetime.now(tz=env.TIMEZONE)
-    return datetime_now.strftime('%d.%m.%Y в %H:%M:%S')
-
-
-@logger.catch
-async def make_html_request(url: str) -> str:
-    async with ClientSession() as session:
-        async with session.get(url=url, ssl=False) as response:
-            return await response.text()
+from tools import (
+    edit_message_in_channel,
+    get_current_date,
+    get_current_datetime,
+    get_sleep_time,
+    make_html_request,
+    redis_get_key,
+    send_message_in_channel,
+)
 
 
 @logger.catch
@@ -60,8 +45,6 @@ async def parse_outages_html(url: str, type_of_outage: str) -> str:
 
 @logger.catch
 async def start_parsing() -> NoReturn:
-    global last_message
-
     while True:
         planned_outages_message = await parse_outages_html(
             url=env.PLANNED_OUTAGES_URL, type_of_outage='Плановые'
@@ -74,7 +57,7 @@ async def start_parsing() -> NoReturn:
         final_message = (
             f'{planned_outages_message}\n\n{emergency_outages_message}'
         )
-        if final_message == last_message:
+        if final_message == await redis_get_key('last_message'):
             message_to_send = (
                 f'<b>Обновлено {get_current_datetime()}</b>\n\n'
                 + final_message
@@ -85,13 +68,8 @@ async def start_parsing() -> NoReturn:
                 f'<b>Обновлено {get_current_datetime()}</b>\n\n'
                 + final_message
             )
-            last_message = final_message
-            message = await send_message_in_channel(message_to_send)
-            env.TELEGRAM_BOT_MESSAGE_ID = message.message_id
-            dotenv.set_key(
-                '.env',
-                'TELEGRAM_BOT_MESSAGE_ID',
-                str(message.message_id),
+            await send_message_in_channel(
+                text=message_to_send, last_message=final_message
             )
 
-        await asyncio.sleep(random.randint(3500, 3700))
+        await asyncio.sleep(get_sleep_time())
