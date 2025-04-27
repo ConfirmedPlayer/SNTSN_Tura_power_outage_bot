@@ -10,6 +10,7 @@
 services:
   snt-tura-power-outages-bot:
     image: snt-tura-power-outages-bot
+    restart: always
     build:
       context: .
     env_file:
