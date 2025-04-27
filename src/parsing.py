@@ -6,6 +6,7 @@ from loguru import logger
 
 import env
 from tools import (
+    delete_message_in_channel,
     edit_message_in_channel,
     get_current_date,
     get_current_datetime,
@@ -68,6 +69,10 @@ async def start_parsing() -> NoReturn:
                 f'<b>Обновлено {get_current_datetime()}</b>\n\n'
                 + final_message
             )
+            if message_id := await redis_get_key('message_id'):
+                await delete_message_in_channel(
+                    chat_id=env.TELEGRAM_BOT_CHANNEL_ID, message_id=message_id
+                )
             await send_message_in_channel(
                 text=message_to_send, last_message=final_message
             )
