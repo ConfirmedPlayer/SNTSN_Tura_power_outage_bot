@@ -59,6 +59,13 @@ async def send_message_in_channel(text: str, last_message: str) -> Message:
 
 
 @logger.catch
+async def delete_message_in_channel(
+    chat_id: int | str, message_id: int
+) -> bool:
+    return await bot.delete_message(chat_id=chat_id, message_id=message_id)
+
+
+@logger.catch
 async def make_html_request(url: str) -> str:
     async with ClientSession() as session:
         async with session.get(url=url, ssl=False) as response:
