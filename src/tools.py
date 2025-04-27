@@ -67,7 +67,6 @@ async def make_html_request(url: str) -> str:
 
 def get_sleep_time() -> int:
     hour_now = datetime.now(env.TIMEZONE).hour
-    hour_now = 6
     if 0 <= hour_now < 6:
         return random.randint(3500, 3700)
     else:
