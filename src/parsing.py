@@ -26,7 +26,8 @@ async def parse_outages_html(url: str, type_of_outage: str) -> str:
     all_outage_periods = soup.find_all(class_='pd-col3')
 
     message = ''
-    message += f'{type_of_outage} отключения:\n\n'
+    default_message = f'{type_of_outage} отключения:\n\n'
+    message += default_message
 
     if not all_addresses or not all_outage_periods:
         return message
@@ -40,6 +41,9 @@ async def parse_outages_html(url: str, type_of_outage: str) -> str:
             if not any(i.isdigit() for i in period):
                 period = 'Неизвестно'
             message += f'{address.text}. Период: {period}\n'
+
+    if message == default_message:
+        message = f'{type_of_outage} отключения: отключений нет!'
 
     return message
 
