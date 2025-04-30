@@ -1,6 +1,5 @@
 services:
   snt-tura-power-outages-bot:
-    image: snt-tura-power-outages-bot
     volumes:
       - ./src:/app
     restart: always
